@@ -22,9 +22,11 @@ import java.util.logging.Logger;
 public class readFile extends Thread{
  
     int SOCKET_PORT;
+    int id;
     final String pathSensorsFile = "./src/Data/sensor.txt";      
     
-    public readFile(int SOCKET_PORT){
+    public readFile(int id, int SOCKET_PORT){
+        this.id = id;
         this.SOCKET_PORT = SOCKET_PORT;      
     }
 
@@ -56,9 +58,13 @@ public class readFile extends Thread{
             String line = reader.readLine();
             while(line != null)
             {
-                dataOutputStream.writeUTF(line);
-                dataOutputStream.flush(); // send the message
-                line = reader.readLine();    
+                int sensorID = getNumbers(line);
+                if(sensorID==this.id)
+                {
+                    dataOutputStream.writeUTF(line);
+                    dataOutputStream.flush(); // send the message              
+                }   
+                line = reader.readLine();                       
             }
         }catch (IOException e ){
             e.printStackTrace();
@@ -75,4 +81,22 @@ public class readFile extends Thread{
             Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    
+    static int getNumbers(String s) {
+
+    String[] n = s.split(""); //array of strings
+    StringBuffer f = new StringBuffer(); // buffer to store numbers
+
+    for (int i = 0; i < n.length; i++) {
+        if((n[i].matches("[0-9]+"))) {// validating numbers
+            f.append(n[i]); //appending
+        }else {
+            //parsing to int and returning value
+            return Integer.parseInt(f.toString()); 
+        }   
+    }
+    return 0;
+ }
+    
 }

@@ -3,6 +3,7 @@
  */
 package UC2.PProducer;
 
+import UC2.PSource.readFile;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -19,48 +20,27 @@ import java.util.logging.Logger;
  */
 public class PProducer extends javax.swing.JFrame {
 
-    /**
-     * Creates new form PProducer
-     */
+    
     public PProducer() throws IOException {
         initComponents();
     }
     
     public void initProducer() throws IOException
     {
-        ServerSocket sConsumer = new ServerSocket(7777);
-        Socket s = sConsumer.accept();
 
-        System.out.println("Server Connected");
-        
-        InputStream inputStream = s.getInputStream();
-        DataInputStream dataInputStream = new DataInputStream(inputStream);
-        while(true)
-        {
-            System.out.println("Input-1-: "+dataInputStream.readUTF());  
-            if(dataInputStream.readUTF()==null)
-            {
-                System.out.println("No more Incoming Data!");
-                break;
-            }
-        }  
-        
-        ServerSocket sConsumer2 = new ServerSocket(7778);
-        Socket s2 = sConsumer2.accept();
-        
-            System.out.println("Server Connected");
-        
-        InputStream inputStream2 = s2.getInputStream();
-        DataInputStream dataInputStream2 = new DataInputStream(inputStream2);
-        while(true)
-        {
-            System.out.println("Input-2-: "+dataInputStream2.readUTF());  
-            if(dataInputStream2.readUTF()==null)
-            {
-                System.out.println("No more Incoming Data!");
-                break;
-            }
-        }  
+        readSocket t0 = new readSocket (0,7771);
+        readSocket t1 = new readSocket (1,7772);
+        readSocket t2 = new readSocket (2,7773);
+        readSocket t3 = new readSocket (3,7774);        
+        readSocket t4 = new readSocket (4,7775);
+        readSocket t5 = new readSocket (5,7776);        
+        t0.start();
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t5.start();        
+
     }
 
     /**

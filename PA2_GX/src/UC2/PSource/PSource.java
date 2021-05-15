@@ -31,14 +31,18 @@ public class PSource extends javax.swing.JFrame {
     
     public void initPsource() throws IOException 
     {
-
-           readFile t1 = new readFile (7777);
-           readFile t2 = new readFile (7778);
-           //t1.start();
-           t2.start();
-           
-            
-           System.out.println("Work done, gonna sleep!");       
+        readFile t0 = new readFile (0,7771);
+        readFile t1 = new readFile (1,7772);
+        readFile t2 = new readFile (2,7773);
+        readFile t3 = new readFile (3,7774);
+        readFile t4 = new readFile (4,7775);
+        readFile t5 = new readFile (5,7776);        
+        t0.start();
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t5.start();        
     }
 
     /**
