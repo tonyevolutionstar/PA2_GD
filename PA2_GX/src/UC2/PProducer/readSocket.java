@@ -20,17 +20,21 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 
 public class readSocket extends Thread{
  
     int SOCKET_PORT;  
     int id;
+    JLabel Thread1;
     
-    public readSocket(int id, int SOCKET_PORT){
+    public readSocket(int id, int SOCKET_PORT,JLabel Thread1){
         this.id = id;
         this.SOCKET_PORT = SOCKET_PORT;      
+        this.Thread1=Thread1;
     }
+
 
     
     public void run()
@@ -60,14 +64,17 @@ public class readSocket extends Thread{
         while(true)
         {
             try {  
-                System.out.println("Input-"+this.id+"-: "+dataInputStream2.readUTF());
+                String str = dataInputStream2.readUTF();
+                Thread1.setText(str);
+                System.out.println("Input-"+this.id+"-: "+str);
             } catch (IOException ex) {
                 Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
             }
             try {
-                if(dataInputStream2.readUTF()==null)
+                if(dataInputStream2.readUTF().isEmpty())
                 {
                     System.out.println("No more Incoming Data!");
+                    sConsumer2.close();
                     break;
                 }
             } catch (IOException ex) {

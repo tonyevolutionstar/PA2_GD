@@ -1,10 +1,13 @@
 /*
  * ver package-info.java
  */
-package UCn.PProducer;
+package UC4.PProducer;
 
+import UC2.PSource.readFile;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,33 +20,27 @@ import java.util.logging.Logger;
  */
 public class PProducer extends javax.swing.JFrame {
 
-    /**
-     * Creates new form PProducer
-     */
+    
     public PProducer() throws IOException {
         initComponents();
     }
     
     public void initProducer() throws IOException
     {
-        ServerSocket sConsumer = new ServerSocket(7777);
-        Socket s = sConsumer.accept();
 
-        System.out.println("Client Connected");
-        
-        InputStreamReader in = new InputStreamReader(s.getInputStream());
-        BufferedReader bf = new BufferedReader(in);
-        while(true)
-        {
-            String str = bf.readLine();
-            System.out.println("Input: "+str);  
-            if(str==null)
-            {
-                System.out.println("No more Incoming Data!");
-                break;
-            }
-        }
-        
+        readSocket t0 = new readSocket (0,7771);
+        readSocket t1 = new readSocket (1,7772);
+        readSocket t2 = new readSocket (2,7773);
+        readSocket t3 = new readSocket (3,7774);        
+        readSocket t4 = new readSocket (4,7775);
+        readSocket t5 = new readSocket (5,7776);        
+        t0.start();
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t5.start();        
+
     }
 
     /**

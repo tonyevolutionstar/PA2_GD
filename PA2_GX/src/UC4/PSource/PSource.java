@@ -1,7 +1,7 @@
 /*
  * ver package-info.java
  */
-package UCn.PSource;
+package UC4.PSource;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,26 +31,18 @@ public class PSource extends javax.swing.JFrame {
     
     public void initPsource() throws IOException 
     {
-           final int SOCKET_PORT = 7777; 
-           final String pathSensorsFile = "./src/Data/sensor.txt";  
-           Socket s = new Socket("localhost",SOCKET_PORT);
-           FileInputStream fis = null;
-           BufferedInputStream BInputStream = null;
-           OutputStream outPutStream = null;           
-           
-
-           File myFile = new File (pathSensorsFile);
-           byte [] mybytearray  = new byte [(int)myFile.length()];
-           fis = new FileInputStream(myFile);
-           BInputStream = new BufferedInputStream(fis);
-           BInputStream.read(mybytearray,0,mybytearray.length);
-           System.out.println("Starting Stream!");            
-           outPutStream = s.getOutputStream();
-           outPutStream.write(mybytearray,0,mybytearray.length);
-           outPutStream.flush();
-            
-            
-            System.out.println("Work done, gonna sleep!");       
+        readFile t0 = new readFile (0,7771);
+        readFile t1 = new readFile (1,7772);
+        readFile t2 = new readFile (2,7773);
+        readFile t3 = new readFile (3,7774);
+        readFile t4 = new readFile (4,7775);
+        readFile t5 = new readFile (5,7776);        
+        t0.start();
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t5.start();      
     }
 
     /**

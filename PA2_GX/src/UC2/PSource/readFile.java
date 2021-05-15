@@ -17,20 +17,22 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 
 public class readFile extends Thread{
  
     int SOCKET_PORT;
     int id;
-    final String pathSensorsFile = "./src/Data/sensor.txt";      
+    final String pathSensorsFile = "./src/Data/sensor.txt"; 
+    JLabel Thread1;
     
-    public readFile(int id, int SOCKET_PORT){
+    public readFile(int id, int SOCKET_PORT,JLabel Thread1){
         this.id = id;
         this.SOCKET_PORT = SOCKET_PORT;      
+        this.Thread1 = Thread1;
     }
 
-    
     public void run()
     {      
         Socket s = null;
@@ -61,6 +63,7 @@ public class readFile extends Thread{
                 int sensorID = getNumbers(line);
                 if(sensorID==this.id)
                 {
+                    Thread1.setText(line);
                     dataOutputStream.writeUTF(line);
                     dataOutputStream.flush(); // send the message              
                 }   
@@ -75,6 +78,7 @@ public class readFile extends Thread{
             Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
+            Thread1.setText("WorkDone!");            
             System.out.println("Closing socket");            
             s.close();
         } catch (IOException ex) {
