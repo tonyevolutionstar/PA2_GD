@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.nio.channels.Channels;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 
 public class readFile extends Thread{

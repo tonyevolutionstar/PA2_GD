@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -23,28 +24,7 @@ public class PProducer extends javax.swing.JFrame {
     public PProducer() throws IOException {
         initComponents();
     }
-    
-    public void initProducer() throws IOException
-    {
-        ServerSocket sConsumer = new ServerSocket(7777);
-        Socket s = sConsumer.accept();
 
-        System.out.println("Client Connected");
-        
-        InputStreamReader in = new InputStreamReader(s.getInputStream());
-        BufferedReader bf = new BufferedReader(in);
-        while(true)
-        {
-            String str = bf.readLine();
-            System.out.println("Input: "+str);  
-            if(str==null)
-            {
-                System.out.println("No more Incoming Data!");
-                break;
-            }
-        }
-        
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -56,6 +36,10 @@ public class PProducer extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        Thread1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -66,32 +50,91 @@ public class PProducer extends javax.swing.JFrame {
             }
         });
 
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel4.setText("PProducer");
+
+        jLabel5.setFont(new java.awt.Font("Arial Black", 1, 11)); // NOI18N
+        jLabel5.setText("UC5");
+
+        jLabel6.setText("Main Thread Status:");
+
+        Thread1.setText("Idle");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(157, 157, 157)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(170, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Thread1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(0, 0, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(143, 143, 143)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 143, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(130, 130, 130)
-                .addComponent(jButton1)
-                .addContainerGap(147, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addGap(1, 1, 1)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jLabel6)
+                    .addComponent(Thread1))
+                .addGap(129, 129, 129))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            initProducer();
-        } catch (IOException ex) {
-            Logger.getLogger(PProducer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+          Thread1.setText("Sending Data (Port:7777)");
+          SwingWorker worker = new SwingWorker<Boolean, Integer>() {
+          @Override
+          protected Boolean doInBackground() throws Exception {
+            ServerSocket sConsumer = new ServerSocket(7777);
+            Socket s = sConsumer.accept();
+
+            System.out.println("Client Connected");
+
+            InputStreamReader in = new InputStreamReader(s.getInputStream());
+            BufferedReader bf = new BufferedReader(in);
+            while(true)
+            {
+                String str = bf.readLine();
+                System.out.println("Input: "+str);  
+                Thread1.setText("Recieving Data (Port:7777): "+str);
+                if(str==null)
+                {
+                    System.out.println("No more Incoming Data!");
+                    break;
+                }
+            }
+            return true;
+          }
+
+          protected void process(Integer chunks) {
+          }
+
+          @Override
+          protected void done() {
+           Thread1.setText("Work Done!");
+          }
+        };
+        worker.execute();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -134,6 +177,10 @@ public class PProducer extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Thread1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     // End of variables declaration//GEN-END:variables
 }

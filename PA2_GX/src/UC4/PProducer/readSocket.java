@@ -21,19 +21,21 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 
 public class readSocket extends Thread{
  
     int SOCKET_PORT;  
     int id;
+    JLabel Threadl;
     
-    public readSocket(int id, int SOCKET_PORT){
+    public readSocket(int id, int SOCKET_PORT, JLabel Thread){
         this.id = id;
-        this.SOCKET_PORT = SOCKET_PORT;      
+        this.SOCKET_PORT = SOCKET_PORT;   
+        this.Threadl = Thread;
     }
 
-    
     public void run()
     {      
        ServerSocket sConsumer = null;
@@ -67,6 +69,7 @@ public class readSocket extends Thread{
                Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
            }
             System.out.println("Input-"+this.id+"-: "+str);  
+            Threadl.setText("Data: "+str);
             if(str==null)
             {
                 System.out.println("No more Incoming Data!");
