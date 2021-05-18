@@ -131,7 +131,7 @@ public class PProducer extends javax.swing.JFrame {
 
           @Override
           protected void done() {
-           Thread1.setText("Work Done!");
+            Thread1.setText("No More Incoming Data!");  
           }
         };
         worker.execute();

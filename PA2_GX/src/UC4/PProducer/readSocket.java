@@ -73,6 +73,7 @@ public class readSocket extends Thread{
             if(str==null)
             {
                 System.out.println("No more Incoming Data!");
+                Threadl.setText("No More Incoming Data!");                
                 break;
             }
         }

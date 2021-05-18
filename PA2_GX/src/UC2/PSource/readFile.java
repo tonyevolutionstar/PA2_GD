@@ -50,7 +50,7 @@ public class readFile extends Thread{
         } catch (IOException ex) {
             Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // create a data output stream from the output stream so we can send data through it
+                // create a data output stream from the output stream so we can send data through it
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
         System.out.println("Sending string to the ServerSocket");
@@ -58,14 +58,23 @@ public class readFile extends Thread{
         try{
             reader = new BufferedReader(new FileReader(pathSensorsFile));
             String line = reader.readLine();
+            String chunkOfData = "";
+            int count = 0;
             while(line != null)
             {
                 int sensorID = getNumbers(line);
                 if(sensorID==this.id)
                 {
                     Thread1.setText(line);
-                    dataOutputStream.writeUTF(line);
-                    dataOutputStream.flush(); // send the message              
+                    chunkOfData += line+"; ";
+                    count ++;
+                    if(count == 1000)
+                    {
+                        dataOutputStream.writeUTF(chunkOfData);
+                        dataOutputStream.flush();  
+                        count = 0;
+                        chunkOfData = "";
+                    } // send the message              
                 }   
                 line = reader.readLine();                       
             }

@@ -66,18 +66,15 @@ public class readSocket extends Thread{
                 String str = dataInputStream2.readUTF();
                 Threadl.setText("Data: "+str);
                 System.out.println("Input-"+this.id+"-: "+str);
-            } catch (IOException ex) {
-                Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            try {
-                if(dataInputStream2.readUTF()==null)
+                if(str.isEmpty())
                 {
-                    System.out.println("No more Incoming Data!");
+                    Threadl.setText("No More Incoming Data!");  
                     break;
                 }
             } catch (IOException ex) {
                 Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         }  
     }
 }

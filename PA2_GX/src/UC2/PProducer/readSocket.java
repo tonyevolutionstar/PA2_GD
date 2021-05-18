@@ -42,6 +42,8 @@ public class readSocket extends Thread{
         ServerSocket sConsumer2 = null;
         try {
             sConsumer2 = new ServerSocket(SOCKET_PORT);
+            sConsumer2.setReceiveBufferSize(50);
+            sConsumer2.setPerformancePreferences(0, 1, 2);            
         } catch (IOException ex) {
             Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -50,6 +52,7 @@ public class readSocket extends Thread{
             s2 = sConsumer2.accept();
         } catch (IOException ex) {
             Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
         
             System.out.println("Server Connected");
@@ -65,20 +68,24 @@ public class readSocket extends Thread{
         {
             try {  
                 String str = dataInputStream2.readUTF();
-                Thread1.setText(str);
-                System.out.println("Input-"+this.id+"-: "+str);
-            } catch (IOException ex) {
-                Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            try {
-                if(dataInputStream2.readUTF().isEmpty())
+                if(str.isEmpty())
                 {
                     System.out.println("No more Incoming Data!");
                     sConsumer2.close();
                     break;
                 }
+                else
+                {
+                    String[] arrOfStr = str.split(";",-2);
+                    for(String a: arrOfStr)
+                    {
+                        System.out.println("Input-"+this.id+"-: "+a);
+                        Thread1.setText(a);                        
+                    }
+                }
             } catch (IOException ex) {
-                Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(readSocket.class.getName()).log(Level.INFO, null, ex);
+                System.exit(1);
             }
         }  
     }

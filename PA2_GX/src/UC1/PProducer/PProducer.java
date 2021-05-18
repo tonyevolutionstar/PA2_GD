@@ -115,6 +115,7 @@ public class PProducer extends javax.swing.JFrame {
             BufferedReader bf = new BufferedReader(in);
             while(true)
             {
+                
                 String str = bf.readLine();
                 System.out.println("Input: "+str);  
                 ThreadStatus.setText("Recieving Data (Port:7777): "+str);
