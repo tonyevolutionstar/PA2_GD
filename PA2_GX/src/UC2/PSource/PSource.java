@@ -1,30 +1,11 @@
-/*
- * ver package-info.java
- */
 package UC2.PSource;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
-
-/**
- *
- * @author omp
- */
 public class PSource extends javax.swing.JFrame {
 
-    /**
-     * Creates new form PSource
-     */
+
     public PSource() throws IOException {
         initComponents();
     }
@@ -43,6 +24,7 @@ public class PSource extends javax.swing.JFrame {
         t3.start();
         t4.start();
         t5.start();   
+        
     }
 
     /**

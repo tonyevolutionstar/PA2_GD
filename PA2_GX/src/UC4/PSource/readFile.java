@@ -1,23 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package UC4.PSource;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.Socket;
-import java.nio.channels.Channels;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
@@ -27,34 +14,71 @@ public class readFile extends Thread{
  
     int SOCKET_PORT;
     int id;
-    final String pathSensorsFile = "./src/Data/sensor.txt";      
+    final String pathSensorsFile = "./src/Data/sensor.txt"; 
+    final int numberOfRecords = 1000;
+    JLabel Thread11;    
     
-    public readFile(int id, int SOCKET_PORT){
+    public readFile(int id, int SOCKET_PORT, JLabel Thread11){
         this.id = id;
-        this.SOCKET_PORT = SOCKET_PORT;      
+        this.SOCKET_PORT = SOCKET_PORT;   
+        this.Thread11 = Thread11;
     }
+
 
     
     public void run()
-    {      
+    {     
+        String chunkOfData = "";
+        DataOutputStream dataOutputStream = null;
+        Socket s = null;
         try {
-            Socket s = new Socket("localhost",SOCKET_PORT);
-            OutputStream outPutStream = null;              
+            s = new Socket("localhost",SOCKET_PORT);         
+            dataOutputStream = new DataOutputStream(s.getOutputStream());
             RandomAccessFile file = new RandomAccessFile(pathSensorsFile,"r");
             file.seek(((85000000/6)-5)*id);  
-            byte[] bytesToRead = new byte[(85000000/6)-5]; 
-            InputStream is = Channels.newInputStream(file.getChannel());
-            is.read(bytesToRead);
-            outPutStream = s.getOutputStream();
-            outPutStream.write(bytesToRead,0,bytesToRead.length);
-            outPutStream.flush();
-            file.close();
-            System.out.println(id+"------");
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
+            String line = file.readLine();
+            int count = 0;
+            while(line != null)
+            {
+                    chunkOfData += line+";";
+                    count ++;
+                    Thread11.setText(line);                    
+                    if(count == numberOfRecords)
+                    {
+                        dataOutputStream.writeUTF(chunkOfData);
+                        dataOutputStream.flush();
+                        count = 0;
+                        chunkOfData = "";
+                    } // send the message              
+                 
+                line = file.readLine();
         }
+        } catch (FileNotFoundException ex) {
+            try {
+                dataOutputStream.writeUTF(chunkOfData);
+            } catch (IOException ex1) {
+                Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+            try {
+                dataOutputStream.writeUTF("Acabou;");
+            } catch (IOException ex1) {
+                Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+            try {
+                dataOutputStream.close(); // close the output stream when we're done.
+            } catch (IOException ex1) {
+                Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+            Thread11.setText("WorkDone!");            
+            System.out.println("Closing socket"); 
+            try {
+                s.close();
+            } catch (IOException ex1) {
+                Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        } catch (IOException ex) {
+            Thread11.setText("Lost Connection!"); 
+        }       
     }
     
 }

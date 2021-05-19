@@ -5,12 +5,8 @@
  */
 package UC3.PSource;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -24,16 +20,15 @@ public class readFile extends Thread{
  
     int SOCKET_PORT;
     int id;
-    final String pathSensorsFile = "./src/Data/sensor.txt";     
-    JLabel Threadl;
+    final String pathSensorsFile = "./src/Data/sensor.txt"; 
+    JLabel Thread1;
     
-    public readFile(int id, int SOCKET_PORT, JLabel threadl){
+    public readFile(int id, int SOCKET_PORT,JLabel Thread1){
         this.id = id;
-        this.SOCKET_PORT = SOCKET_PORT;   
-        this.Threadl = threadl;
+        this.SOCKET_PORT = SOCKET_PORT;      
+        this.Thread1 = Thread1;
     }
 
-    
     public void run()
     {      
         Socket s = null;
@@ -51,22 +46,30 @@ public class readFile extends Thread{
         } catch (IOException ex) {
             Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // create a data output stream from the output stream so we can send data through it
+                // create a data output stream from the output stream so we can send data through it
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-
+        String chunkOfData = "";
         System.out.println("Sending string to the ServerSocket");
 
         try{
             reader = new BufferedReader(new FileReader(pathSensorsFile));
             String line = reader.readLine();
+            int count = 0;
             while(line != null)
             {
                 int sensorID = getNumbers(line);
                 if(sensorID==this.id)
                 {
-                    Threadl.setText("Data: "+line);
-                    dataOutputStream.writeUTF(line);
-                    dataOutputStream.flush(); // send the message              
+                    Thread1.setText(line);
+                    chunkOfData += line+"; ";
+                    count ++;
+                    if(count == 1000)
+                    {
+                        dataOutputStream.writeUTF(chunkOfData);
+                        dataOutputStream.flush();  
+                        count = 0;
+                        chunkOfData = "";
+                    }            
                 }   
                 line = reader.readLine();                       
             }
@@ -74,15 +77,14 @@ public class readFile extends Thread{
             e.printStackTrace();
         }
         try {
+            dataOutputStream.writeUTF(chunkOfData);
+            dataOutputStream.writeUTF("Acabou;");
             dataOutputStream.close(); // close the output stream when we're done.
-        } catch (IOException ex) {
-            Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            System.out.println("Closing socket");            
+            Thread1.setText("WorkDone!");            
+            System.out.println("Closing socket"); 
             s.close();
         } catch (IOException ex) {
-            Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
+            Thread1.setText("Lost Connection!");  
         }
     }
     

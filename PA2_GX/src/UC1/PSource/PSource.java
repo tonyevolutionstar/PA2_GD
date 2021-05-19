@@ -1,32 +1,17 @@
-/*
- * ver package-info.java
- */
 package UC1.PSource;
 
-import java.awt.List;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import javax.swing.SwingWorker;
 
-/**
- *
- * @author omp
- */
 public class PSource extends javax.swing.JFrame {
 
-    /**
-     * Creates new form PSource
-     */
     public PSource() throws IOException {
         initComponents();
     }
@@ -34,7 +19,8 @@ public class PSource extends javax.swing.JFrame {
     public void initPsource() throws IOException 
     {   
     }
-
+    
+ 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -112,22 +98,60 @@ public class PSource extends javax.swing.JFrame {
         SwingWorker worker = new SwingWorker<Boolean, Integer>() {
           @Override
           protected Boolean doInBackground() throws Exception {
-              System.out.println("ENTROU");
-            final int SOCKET_PORT = 7777; 
-            final String pathSensorsFile = "./src/Data/sensor.txt";  
-            Socket s = new Socket("localhost",SOCKET_PORT);
-            FileInputStream fis = null;
-            BufferedInputStream BInputStream = null;
-            OutputStream outPutStream = null;           
-            File myFile = new File (pathSensorsFile);
-            byte [] mybytearray  = new byte [(int)myFile.length()];
-            fis = new FileInputStream(myFile);
-            BInputStream = new BufferedInputStream(fis);
-            BInputStream.read(mybytearray,0,mybytearray.length); 
-            outPutStream = s.getOutputStream();
-            outPutStream.write(mybytearray,0,mybytearray.length);
-            outPutStream.flush();  
-            return true;
+            Socket s = null;
+            try {
+                s = new Socket("localhost",7777);
+            } catch (IOException ex) {
+                Logger.getLogger(PSource.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            BufferedReader reader;
+
+            // get the output stream from the socket.
+            OutputStream outputStream = null;
+            try {
+                outputStream = s.getOutputStream();
+            } catch (IOException ex) {
+                Logger.getLogger(PSource.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                    // create a data output stream from the output stream so we can send data through it
+            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+            String chunkOfData = "";
+            System.out.println("Sending string to the ServerSocket");
+
+            try{
+                reader = new BufferedReader(new FileReader("./src/Data/sensor.txt"));
+                String line = reader.readLine();
+                int count = 0;
+                while(line != null)
+                {
+                        ThreadStatus.setText(line);
+                        System.out.println(line);
+                        chunkOfData += line+"; ";
+                        count ++;
+                        if(count == 1000)
+                        {
+                            dataOutputStream.writeUTF(chunkOfData);
+                            dataOutputStream.flush();  
+                            count = 0;
+                            chunkOfData = "";
+                        }            
+                      
+                    line = reader.readLine();                       
+                }
+            }catch (IOException e ){
+                e.printStackTrace();
+            }
+            try {
+                dataOutputStream.writeUTF(chunkOfData);
+                dataOutputStream.writeUTF("Acabou;");
+                dataOutputStream.close(); // close the output stream when we're done.
+                ThreadStatus.setText("WorkDone!");            
+                System.out.println("Closing socket"); 
+                s.close();
+            } catch (IOException ex) {
+                ThreadStatus.setText("Lost Connection!");  
+            }
+              return true;
           }
 
           protected void process(Integer chunks) {

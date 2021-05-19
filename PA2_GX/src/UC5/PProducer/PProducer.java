@@ -3,9 +3,10 @@
  */
 package UC5.PProducer;
 
-import java.io.BufferedReader;
+import UC3.PProducer.readSocket;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -105,25 +106,59 @@ public class PProducer extends javax.swing.JFrame {
           SwingWorker worker = new SwingWorker<Boolean, Integer>() {
           @Override
           protected Boolean doInBackground() throws Exception {
-            ServerSocket sConsumer = new ServerSocket(7777);
-            Socket s = sConsumer.accept();
-
-            System.out.println("Client Connected");
-
-            InputStreamReader in = new InputStreamReader(s.getInputStream());
-            BufferedReader bf = new BufferedReader(in);
-            while(true)
-            {
-                String str = bf.readLine();
-                System.out.println("Input: "+str);  
-                Thread1.setText("Recieving Data (Port:7777): "+str);
-                if(str==null)
-                {
-                    System.out.println("No more Incoming Data!");
-                    break;
+            ServerSocket sConsumer2 = null;
+                try {
+                    sConsumer2 = new ServerSocket(7777);
+                    sConsumer2.setReceiveBufferSize(200);           
+                } catch (IOException ex) {
+                    Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
-            return true;
+                Socket s2 = null;
+                try {
+                    s2 = sConsumer2.accept();
+                } catch (IOException ex) {
+                    Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
+                    System.exit(1);
+                }
+
+                    System.out.println("Server Connected");
+                InputStream inputStream2 = null;
+                try {
+                    inputStream2 = s2.getInputStream();
+                } catch (IOException ex) {
+                    Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                DataInputStream dataInputStream2 = new DataInputStream(inputStream2);
+                while(true)
+                {
+                    try {  
+                        String str = dataInputStream2.readUTF();                    
+                            String[] arrOfStr = str.split(";",-2);
+                            for(String a: arrOfStr)
+                            {
+                                if(!a.isBlank())
+                                {
+                                    if(a.equals("Acabou"))
+                                    {
+                                        Thread1.setText("Work done!");   
+                                        return true;
+                                    }
+                                    Thread1.setText(a);   
+                                    System.out.println(a);
+                                }                        
+                            }
+
+                    } catch (IOException ex) {
+                        Logger.getLogger(readSocket.class.getName()).log(Level.INFO, null, ex);
+                        try {
+                            s2.close();
+                            Thread1.setText("Lost Connection!");
+                        } catch (IOException ex1) {
+                            Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex1);
+                        }
+                    }
+                }  
           }
 
           protected void process(Integer chunks) {

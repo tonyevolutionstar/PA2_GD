@@ -1,16 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package UC2.PSource;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -52,13 +43,12 @@ public class readFile extends Thread{
         }
                 // create a data output stream from the output stream so we can send data through it
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-
+        String chunkOfData = "";
         System.out.println("Sending string to the ServerSocket");
 
         try{
             reader = new BufferedReader(new FileReader(pathSensorsFile));
             String line = reader.readLine();
-            String chunkOfData = "";
             int count = 0;
             while(line != null)
             {
@@ -74,7 +64,7 @@ public class readFile extends Thread{
                         dataOutputStream.flush();  
                         count = 0;
                         chunkOfData = "";
-                    } // send the message              
+                    }            
                 }   
                 line = reader.readLine();                       
             }
@@ -82,16 +72,14 @@ public class readFile extends Thread{
             e.printStackTrace();
         }
         try {
+            dataOutputStream.writeUTF(chunkOfData);
+            dataOutputStream.writeUTF("Acabou;");
             dataOutputStream.close(); // close the output stream when we're done.
-        } catch (IOException ex) {
-            Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
             Thread1.setText("WorkDone!");            
-            System.out.println("Closing socket");            
+            System.out.println("Closing socket"); 
             s.close();
         } catch (IOException ex) {
-            Logger.getLogger(readFile.class.getName()).log(Level.SEVERE, null, ex);
+            Thread1.setText("Lost Connection!");  
         }
     }
     

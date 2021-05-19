@@ -31,12 +31,12 @@ public class PSource extends javax.swing.JFrame {
     
     public void initPsource() throws IOException 
     {
-        readFile t0 = new readFile (0,7771);
-        readFile t1 = new readFile (1,7772);
-        readFile t2 = new readFile (2,7773);
-        readFile t3 = new readFile (3,7774);
-        readFile t4 = new readFile (4,7775);
-        readFile t5 = new readFile (5,7776);        
+        readFile t0 = new readFile (0,7771,Thread11);
+        readFile t1 = new readFile (1,7772,Thread22);
+        readFile t2 = new readFile (2,7773,Thread33);
+        readFile t3 = new readFile (3,7774,Thread44);
+        readFile t4 = new readFile (4,7775,Thread55);
+        readFile t5 = new readFile (5,7776,Thread66);        
         t0.start();
         t1.start();
         t2.start();

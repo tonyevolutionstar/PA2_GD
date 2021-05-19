@@ -5,18 +5,9 @@
  */
 package UC4.PProducer;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -38,44 +29,62 @@ public class readSocket extends Thread{
 
     public void run()
     {      
-       ServerSocket sConsumer = null;
+        ServerSocket sConsumer2 = null;
         try {
-            sConsumer = new ServerSocket(SOCKET_PORT);
+            sConsumer2 = new ServerSocket(SOCKET_PORT);
+            sConsumer2.setReceiveBufferSize(50);
+            sConsumer2.setPerformancePreferences(0, 1, 2);            
         } catch (IOException ex) {
-            Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UC4.PProducer.readSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Socket s = null;
+        Socket s2 = null;
         try {
-            s = sConsumer.accept();
+            s2 = sConsumer2.accept();
         } catch (IOException ex) {
-            Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UC4.PProducer.readSocket.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
-
-        System.out.println("Client Connected");
         
-        InputStreamReader in = null;
+            System.out.println("Server Connected");
+        
+        InputStream inputStream2 = null;
         try {
-            in = new InputStreamReader(s.getInputStream());
+            inputStream2 = s2.getInputStream();
         } catch (IOException ex) {
-            Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UC4.PProducer.readSocket.class.getName()).log(Level.SEVERE, null, ex);
         }
-        BufferedReader bf = new BufferedReader(in);
+        DataInputStream dataInputStream2 = new DataInputStream(inputStream2);
         while(true)
         {
-            String str = null;
-           try {
-               str = bf.readLine();
-           } catch (IOException ex) {
-               Logger.getLogger(readSocket.class.getName()).log(Level.SEVERE, null, ex);
-           }
-            System.out.println("Input-"+this.id+"-: "+str);  
-            Threadl.setText("Data: "+str);
-            if(str==null)
-            {
-                System.out.println("No more Incoming Data!");
-                Threadl.setText("No More Incoming Data!");                
-                break;
+            try {  
+                String str = dataInputStream2.readUTF();
+                if(str.isEmpty())
+                {
+                    System.out.println("No more Incoming Data!");
+                    sConsumer2.close();
+                    break;
+                }
+                else
+                {
+                    String[] arrOfStr = str.split(";",-2);
+                    for(String a: arrOfStr)
+                    {
+                        if(!a.isBlank())
+                        {
+                            System.out.println("Input-"+this.id+"-: "+a);
+                            Threadl.setText(a);     
+                        }                      
+                    }
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(UC4.PProducer.readSocket.class.getName()).log(Level.INFO, null, ex);
+                try {
+                    s2.close();
+                    Threadl.setText("Lost Connection!");
+                } catch (IOException ex1) {
+                    Logger.getLogger(UC4.PProducer.readSocket.class.getName()).log(Level.SEVERE, null, ex1);
+                }
             }
-        }
+        }  
     }
 }
